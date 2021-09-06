@@ -28,6 +28,12 @@ public class LinkedList <T> implements List<T>{
             throw new IndexOutOfBoundsException("Ti pidor!");
     }
 
+    public void set(int index, T element){
+        checkIndex(index);
+        Node node = new Node(element, getNode(index + 1));
+        getNode(index-1).next = node;
+    }
+
     @Override
     public void add(T element) {
         if (head == null) {
