@@ -4,15 +4,15 @@ import java.util.Iterator;
  * @author Kozka Ivan
  */
 public class ArrayList <T> implements List<T> {
-    private T[] data;
+    protected T[] data;
 
     private final int INIT_CAPACITY = 10;
     private final int CAPACITY_STEP = 2;
     private int capacity;
-    private int size;
+    protected int size;
 
     public Iterator<T> iterator(){
-        return new Iterator<T>() {
+        return new Iterator<>() {
             private int index = 0;
 
             @Override
