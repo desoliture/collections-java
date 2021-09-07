@@ -6,13 +6,13 @@ public class Stack <T> extends ArrayList<T> {
         super.add(element);
     }
 
-    public T pop() {
-        T lastElem = super.get(size - 1);
-        super.remove(size - 1);
-        return lastElem;
-    }
-
     public T peek() {
         return super.get(size - 1);
+    }
+
+    public T pop() {
+        T lastElem = peek();
+        super.remove(size - 1);
+        return lastElem;
     }
 }

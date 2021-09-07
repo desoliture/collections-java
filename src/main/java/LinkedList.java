@@ -7,9 +7,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Kozka Ivan
  */
-public class LinkedList <T> implements List<T>{
-    //TODO: 1. check iterator 2. set(idx, elem)
-
+public class LinkedList <T> implements List<T>, Queue<T>{
     private Node<T> head;
     private int size = 0;
 
@@ -188,6 +186,25 @@ public class LinkedList <T> implements List<T>{
         }
 
         return sb.substring(0, sb.length() - 2) + "]";
+    }
+
+    @Override
+    public void offer(T element) {
+        add(element);
+    }
+
+    @Override
+    public T poll() {
+        T e = peek();
+        remove(0);
+        return e;
+    }
+
+    @Override
+    public T peek() {
+        if (size > 0) return get(0);
+
+        throw new NoSuchElementException("Ti pidor!");
     }
 
     private static class Node<T> {
