@@ -1,7 +1,7 @@
 /**
  * @author Kozka Ivan
  */
-public interface Map <K, V>{
+public interface Map <K, V> {
     void put(K key, V value);
     V get(K key);
     Set<K> keySet();

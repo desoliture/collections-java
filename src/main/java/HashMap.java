@@ -1,3 +1,6 @@
+import java.lang.reflect.Array;
+import java.util.NoSuchElementException;
+
 /**
  * @author Kozka Ivan
  */
@@ -6,9 +9,14 @@ public class HashMap<K, V> implements Map<K, V> {
     private static final double LOAD_FACTOR = 0.75;
 
     private int size = 0;
-    private HashMap.Node<K, V>[] data =
-            (HashMap.Node<K, V>[]) new Object[INIT_CAPACITY];
+    private Node<K, V>[] data;
 
+    @SuppressWarnings("unchecked")
+    public HashMap() {
+        data = (Node<K, V>[]) Array.newInstance(
+                Node.class,
+                INIT_CAPACITY);
+    }
 
     private int getPos(K key, int arrayLength) {
         return Math.abs(key.hashCode() % arrayLength);
@@ -55,24 +63,69 @@ public class HashMap<K, V> implements Map<K, V> {
         size++;
     }
 
-    @Override
-    public V get(K key) {
-        return null;
+    private Node<K, V> getNodeBy(K key) {
+        int pos = getPos(key, data.length);
+
+        Node<K, V> current = data[pos];
+
+        while(current != null) {
+            if (current.key.equals(key)) return current;
+            current = current.next;
+        }
+
+        throw new NoSuchElementException("Ti pidor!");
     }
 
     @Override
+    public V get(K key) {
+        return getNodeBy(key).value;
+    }
+
+    @Override
+    @Deprecated
     public Set<K> keySet() {
-        return null;
+        throw new RuntimeException("Not supported");
     }
 
     @Override
     public List<V> values() {
-        return null;
+        List<V> list = new ArrayList<>();
+
+        for (Node<K, V> n : data) {
+            Node<K, V> current = n;
+
+            while (current != null) {
+                list.add(n.value);
+                current = current.next;
+            }
+        }
+
+        return list;
     }
 
     @Override
     public void remove(K key) {
+        int pos = getPos(key, data.length);
 
+        Node<K, V> current = data[pos];
+
+        if (current.next != null && current.key.equals(key)) {
+            data[pos] = current.next;
+        }
+        else {
+            while (current != null) {
+                if (current.next != null
+                        && current.next.key.equals(key)) {
+                    current.next = current.next.next;
+                    break;
+                }
+                else if (current.next == null)
+                    throw new NoSuchElementException();
+
+                current = current.next;
+            }
+        }
+        size--;
     }
 
     @Override
@@ -91,6 +144,8 @@ public class HashMap<K, V> implements Map<K, V> {
         private K key;
         private V value;
         private Node<K, V> next;
+
+        private Node(){}
 
         public Node(K key, V value, Node<K, V> next) {
             this.key = key;
