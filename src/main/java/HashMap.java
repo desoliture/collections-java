@@ -1,4 +1,5 @@
 import java.lang.reflect.Array;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -82,9 +83,14 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    @Deprecated
     public Set<K> keySet() {
-        throw new RuntimeException("Not supported");
+        HashSet<K> set = new HashSet<>();
+
+        for (var e : this) {
+            set.add(e.getKey());
+        }
+
+        return set;
     }
 
     @Override
@@ -137,6 +143,26 @@ public class HashMap<K, V> implements Map<K, V> {
     public void clear() {
         size = 0;
         data = (HashMap.Node<K, V>[]) new Object[INIT_CAPACITY];
+    }
+
+    public List<Entry<K, V>> entryList() {
+        List<Entry<K, V>> list = new ArrayList<>();
+
+        for (Node<K, V> datum : data) {
+            Node<K, V> current = datum;
+
+            while (current != null) {
+                list.add(current);
+                current = current.next;
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public Iterator<Entry<K, V>> iterator() {
+        return entryList().iterator();
     }
 
     static class Node<K, V> implements Map.Entry<K, V> {
