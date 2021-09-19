@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 public class HashMap<K, V> implements Map<K, V> {
     private static final int INIT_CAPACITY = 16;
     private static final double LOAD_FACTOR = 0.75;
+    private static final double RESIZE_K = 1.5;
 
     private int size = 0;
     private Node<K, V>[] data;
@@ -16,16 +17,21 @@ public class HashMap<K, V> implements Map<K, V> {
     public HashMap() {
         data = (Node<K, V>[]) Array.newInstance(
                 Node.class,
-                INIT_CAPACITY);
+                INIT_CAPACITY
+        );
     }
 
     private int getPos(K key, int arrayLength) {
         return Math.abs(key.hashCode() % arrayLength);
     }
 
+    @SuppressWarnings("unchecked")
     private void increase() {
         HashMap.Node<K, V>[] increased =
-                (HashMap.Node<K, V>[]) new Object[INIT_CAPACITY];
+                (Node<K, V>[]) Array.newInstance(
+                        Node.class,
+                        (int) (INIT_CAPACITY * RESIZE_K)
+                );
 
         for (HashMap.Node<K, V> n : data) {
             while (n != null) {
