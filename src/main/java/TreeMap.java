@@ -207,12 +207,12 @@ public class TreeMap <K, V> implements Map<K, V> {
 
         @Override
         public K getKey() {
-            return null;
+            return this.key;
         }
 
         @Override
         public V getValue() {
-            return null;
+            return this.value;
         }
     }
 }
