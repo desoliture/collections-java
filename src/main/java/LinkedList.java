@@ -142,7 +142,7 @@ public class LinkedList <T> implements List<T>, Queue<T>{
     }
 
     @Override
-    public void addAll(Collection<T> collection) {
+    public void addAll(Collection<? extends T> collection) {
         for (T t : collection) {
             add(t);
         }

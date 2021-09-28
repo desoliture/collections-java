@@ -1,14 +1,15 @@
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * @author Kozka Ivan
  */
 public class TreeMap <K, V> implements Map<K, V> {
     private int size;
-    private Node<K, V> root;
+    public Node<K, V> root;
 
-    Comparator<K> comp;
+    private Comparator<K> comp;
 
     public TreeMap() {
         comp = null;
@@ -18,7 +19,10 @@ public class TreeMap <K, V> implements Map<K, V> {
         this.comp = comp;
     }
 
-    private void put(K key, V value, Node<K, V> current, Comparator<K> comparator) {
+    private void put(K key, V value,
+                     Node<K, V> current,
+                     Comparator<K> comparator) {
+
         int res = comparator.compare(current.key, key);
 
         if (res > 0) {
@@ -40,14 +44,8 @@ public class TreeMap <K, V> implements Map<K, V> {
         }
     }
 
-    @Override
-    public void put(K key, V value) {
-        if (root == null) {
-            root = new Node<>(key, value);
-            size++;
-            return;
-        }
-
+    @SuppressWarnings("unchecked")
+    private Comparator<K> getComparator(K key) {
         Comparator<K> comparator;
 
         if (comp != null)
@@ -57,32 +55,108 @@ public class TreeMap <K, V> implements Map<K, V> {
                     ((Comparable<K>) e1).compareTo(e2);
         else throw new RuntimeException("No comparator!");
 
-        put(key, value, root, comparator);
+        return comparator;
+    }
+
+    @Override
+    public void put(K key, V value) {
+        if (root == null) {
+            root = new Node<>(key, value);
+            size++;
+            return;
+        }
+
+        put(key, value, root, getComparator(key));
+    }
+
+    private Node<K, V> getNodeBy(K key,
+                                 Node<K, V> current,
+                                 Comparator<K> comp) {
+
+        if (current == null)
+            throw new NoSuchElementException("Not found!");
+
+        int res = comp.compare(current.key, key);
+
+        if (res == 0) return current;
+
+        return getNodeBy(key,
+                res > 0 ? current.right : current.left,
+                comp);
     }
 
     @Override
     public V get(K key) {
-        if (root == null)
-            throw new NullPointerException("Empty!");
+        emptyCheck();
 
-        //BE BACK SOON
-
-        return null;
+        return getNodeBy(key, root,
+                getComparator(key)).value;
     }
 
-    @Override
-    public Set<K> keySet() {
-        return null;
-    }
 
-    @Override
-    public List<V> values() {
-        return null;
+
+    private List<Node<K, V>> getChildren(Node<K, V> current,
+                                         List<Node<K, V>> list) {
+
+        list.add(current);
+        if (current.left != null)
+            getChildren(current.left, list);
+        if (current.right != null)
+            getChildren(current.right, list);
+
+        return list;
     }
 
     @Override
     public void remove(K key) {
+        emptyCheck();
 
+        var toDelete =
+                getNodeBy(key, root, getComparator(key));
+
+        var children =
+                getChildren(toDelete,
+                        new ArrayList<>());
+
+
+        children.remove(children.indexOf(toDelete));
+
+        addAll(children);
+    }
+
+    private void addAll(Collection<Node<K, V>> children) {
+        for (var e : children) {
+            put(e.key, e.value);
+        }
+    }
+
+    @Override
+    public Set<K> keySet() {
+        //TODO: change to TreeSet when its ready
+
+        emptyCheck();
+
+        Set<K> res = new HashSet<>();
+        getChildren(root, new ArrayList<>())
+                .forEach(e -> res.add(e.key));
+
+        return res;
+    }
+
+    private void emptyCheck() {
+        if (root == null)
+            throw new RuntimeException("Empty!");
+    }
+
+    @Override
+    public List<V> values() {
+        emptyCheck();
+
+        List<V> res = new ArrayList<>();
+        getChildren(root, new ArrayList<>())
+                .forEach(e -> res.add(e.value));
+
+        return res;
     }
 
     @Override
@@ -95,8 +169,13 @@ public class TreeMap <K, V> implements Map<K, V> {
         root = null;
     }
 
-    private List<Entry<K, V>> entryList() {
-        return null;
+    public List<Entry<K, V>> entryList() {
+        emptyCheck();
+
+        List<Entry<K, V>> entries = new ArrayList<>();
+        entries.addAll(getChildren(root, new ArrayList<>()));
+
+        return entries;
     }
 
     @Override
@@ -104,7 +183,7 @@ public class TreeMap <K, V> implements Map<K, V> {
         return entryList().iterator();
     }
 
-    private static class Node <K, V> implements Map.Entry<K, V> {
+    public static class Node <K, V> implements Map.Entry<K, V> {
         K key;
         V value;
 

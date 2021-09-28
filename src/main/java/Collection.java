@@ -11,5 +11,5 @@ public interface Collection<T> extends Iterable<T> {
     void clear();
     boolean contains(T element);
     T[] toArray();
-    void addAll(Collection<T> collection);
+    void addAll(Collection<? extends T> collection);
 }

@@ -54,7 +54,7 @@ public class HashSet<T> implements Set<T>{
     }
 
     @Override
-    public void addAll(Collection<T> collection) {
+    public void addAll(Collection<? extends T> collection) {
         for (var c : collection) {
             add(c);
         }

@@ -116,7 +116,7 @@ public class ArrayList <T> implements List<T> {
     }
 
     @Override
-    public void addAll(Collection<T> collection) {
+    public void addAll(Collection<? extends T> collection) {
         for (T e : collection) {
             add(e);
         }
