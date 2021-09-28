@@ -17,6 +17,8 @@ public class Main {
         goods.put("Joja", 1);
         goods.put("bread", 4);
 
+        goods.remove("Joja");
+
         for (var e : goods) {
             System.out.println(e.getKey() + " : " + e.getValue());
         }

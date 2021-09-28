@@ -81,7 +81,7 @@ public class TreeMap <K, V> implements Map<K, V> {
         if (res == 0) return current;
 
         return getNodeBy(key,
-                res > 0 ? current.right : current.left,
+                res > 0 ? current.left : current.right,
                 comp);
     }
 
@@ -118,13 +118,17 @@ public class TreeMap <K, V> implements Map<K, V> {
                 getChildren(toDelete,
                         new ArrayList<>());
 
+        for (var e : getChildren(root, new ArrayList<>())) {
+            if (e.left == toDelete) e.left = null;
+            else if (e.right == toDelete) e.right = null;
+        }
 
         children.remove(children.indexOf(toDelete));
 
         addAll(children);
     }
 
-    private void addAll(Collection<Node<K, V>> children) {
+    private void addAll(List<Node<K, V>> children) {
         for (var e : children) {
             put(e.key, e.value);
         }
@@ -167,6 +171,7 @@ public class TreeMap <K, V> implements Map<K, V> {
     @Override
     public void clear() {
         root = null;
+        size = 0;
     }
 
     public List<Entry<K, V>> entryList() {
